@@ -11,8 +11,7 @@ def load_pretrained_model():
 
 # Train and Return Crop recommendation model
 def get_crop_model():
-    # Loading the downloaded dataset
-    path = r"data/Expanded_Crop_recommendation.csv"
+    path = r"data/Crop_Recommendation.csv"
     df = pd.read_csv(path)
 
     print("Loading crop dataset...")
@@ -20,15 +19,30 @@ def get_crop_model():
     y = df["label"]
 
     model = lgb.LGBMClassifier()
-
-    # Training the model using Training Data
     print("Training crop model...")
     model.fit(x, y)
-    
-    # Save the model if needed
-    model.booster_.save_model("crop_model.txt")  # Optional: Save the trained model
+
+    # Optional: Save the trained model if needed
+    model.booster_.save_model("crop_model.txt")
     
     return model
+
+# Define soil nutrient depletion logic for crop rotation
+def update_soil_conditions(crop, conditions):
+    # Example nutrient adjustments based on the crop type
+    nutrient_depletion = {
+        "rice": {"N": -5, "P": -3, "K": -4},
+        "wheat": {"N": -4, "P": -2, "K": -3},
+        "corn": {"N": -3, "P": -4, "K": -5},
+        # Add more crops with their respective nutrient depletion values here
+    }
+    
+    # Update soil conditions if crop exists in the nutrient depletion dictionary
+    if crop in nutrient_depletion:
+        for nutrient, change in nutrient_depletion[crop].items():
+            conditions[nutrient] += change  # Adjust nutrient value
+    
+    return conditions
 
 #-----------------------------------------------------------------------------------------
 
